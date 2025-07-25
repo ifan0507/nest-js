@@ -10,20 +10,17 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Roles } from '@/auth/role.decorator';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  // @Roles('admin', 'user')
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
 
   @Get()
-  // @Roles('admin', 'user')
   findAll() {
     return this.categoryService.findAll();
   }
@@ -33,7 +30,7 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
-  @Patch('/:id')
+  @Patch('/:id/edit')
   update(
     @Param('id') id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -41,7 +38,7 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id/delete')
   remove(@Param('id') id: number) {
     return this.categoryService.remove(id);
   }
