@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,7 +6,7 @@ import config from '@/typeorm.config';
 import { UserModule } from '@/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { RoleGuard } from '@/auth/auth.guard';
 import { JwtAuthGuard } from '@/auth/jwt-auth-guard.guard';
 import { CategoryModule } from './category/category.module';
@@ -34,6 +34,10 @@ import { BlogModule } from './blog/blog.module';
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
     },
   ],
 })

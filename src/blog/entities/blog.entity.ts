@@ -16,6 +16,9 @@ export class Blog {
   @Column()
   title: string;
 
+  @Column({ unique: true })
+  slug: string;
+
   @Column({ type: 'text' })
   description: string;
 

@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '@/category/entities/category.entity';
 import { Repository } from 'typeorm';
+import slugify from 'slugify';
 
 @Injectable()
 export class CategoryService {
@@ -13,8 +18,19 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
+    const slug = slugify(createCategoryDto.name, { lower: true });
+    const exitingSlug = await this.categoryRepository.findOne({
+      where: { slug },
+    });
+    if (exitingSlug) {
+      throw new ConflictException(
+        `Category ${createCategoryDto.name} already exit `,
+      );
+    }
+
     const category = new Category();
     category.name = createCategoryDto.name;
+    category.slug = slug;
     return this.categoryRepository.save(category);
   }
 
@@ -38,7 +54,23 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException(`Category with id ${id} not found`);
     }
-    Object.assign(category, updateCategoryDto);
+
+    if (updateCategoryDto.name) {
+      const slug = slugify(updateCategoryDto.name, { lower: true });
+      if (slug !== category.slug) {
+        const exitingSlug = await this.categoryRepository.findOne({
+          where: { slug },
+        });
+        if (exitingSlug) {
+          throw new ConflictException(
+            `Category ${updateCategoryDto.name} already exit `,
+          );
+        }
+        category.slug = slug;
+      }
+      category.name = updateCategoryDto.name;
+    }
+
     return this.categoryRepository.save(category);
   }
 

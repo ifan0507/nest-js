@@ -9,6 +9,9 @@ export class Category {
   @Column()
   name: string;
 
+  @Column({ unique: true })
+  slug: string;
+
   @OneToMany(() => Blog, (blog) => blog.category)
   blog: Blog[];
 }
